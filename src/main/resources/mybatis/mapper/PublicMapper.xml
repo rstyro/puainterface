@@ -1,0 +1,182 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="top.lrshuai.pua.dao.PublicDao" >
+	
+	<!-- 新增点赞记录-->
+	<insert id="savePraise" parameterType="pm">
+		insert into pua_praise(
+			table_id
+			<if test="table_type != null and table_type != ''">
+				,table_type
+			</if>
+			<if test="user_id != null and user_id != ''">
+				,user_id
+			</if>
+		) values(
+			#{table_id}
+			<if test="table_type != null and table_type != ''">
+				,#{table_type}
+			</if>
+			<if test="user_id != null and user_id != ''">
+			,#{user_id}
+			</if>
+		)
+	</insert>
+	
+	<!-- 是否重复点赞 -->
+	<select id="repeatPraise" parameterType="pm" resultType="pm">
+		select praise_id from pua_praise 
+			where 
+				table_id=#{table_id} and user_id=#{user_id}
+				<if test="table_type != null and table_type != ''">
+					and table_type=#{table_type}
+				</if> 
+	</select>
+	
+	<!-- 新增收藏记录-->
+	<insert id="saveCollect" parameterType="pm">
+		insert into pua_collect(
+			speechcraft_id,
+			user_id
+		) values(
+			#{speechcraft_id},
+			#{user_id}
+		)
+	</insert>
+	
+	<!-- 是否重复收藏 -->
+	<select id="repeatCollect" parameterType="pm" resultType="pm">
+		select collect_id from pua_collect 
+			where 
+				user_id=#{user_id} and speechcraft_id=#{speechcraft_id}
+	</select>
+	
+	<!-- 获取用户收藏列表 -->
+	<select id="getUserCollectList" parameterType="pm" resultType="pm">
+		SELECT
+			speechcraft_id
+		from 
+			pua_collect 
+		WHERE
+			user_id=#{user_id}
+
+	</select>
+	
+	<!-- 删除收藏 -->
+	<delete id="delCollect" parameterType="pm" >
+		delete from pua_collect 
+			where 
+				user_id=#{user_id} and speechcraft_id=#{speechcraft_id}
+	</delete>
+	
+	<!-- 新增反馈记录 -->
+	<insert id="saveUserFeedback" parameterType="pm">
+		insert into pua_feedback(
+			user_id,
+			content
+		) values(
+			#{user_id},
+			#{content}
+		)
+	</insert>
+	
+	<!-- 发布一条系统消息 -->
+	<insert id="saveSystemMsg" parameterType="pm">
+		insert into pua_sys_msg(
+			title,
+			<if test="push_id != null and push_id != ''">
+			push_id,
+			</if>
+			msg_content,
+			create_time
+		) values(
+			#{title},
+			<if test="push_id != null and push_id != ''">
+			#{push_id},
+			</if>
+			#{msg_content},
+			#{create_time}
+		)
+	</insert>
+	
+	<!-- 保存用户已读的系统消息 -->
+	<insert id="saveSysMsgRead" parameterType="pm">
+		insert into pua_sysmsg_read(
+			user_id,
+			<if test="is_del != null and is_del != ''">
+				is_del,
+			</if>
+			msg_id
+		) values(
+			#{user_id},
+			<if test="is_del != null and is_del != ''">
+				#{is_del},
+			</if>
+			#{msg_id}
+		)
+	</insert>
+	
+	<!-- 获取用户系统的消息列表 ，B表是一个子查询，查询用户的已读列表-->
+	<select id="getUserSysMsgReadlistPage" parameterType="page" resultType="pm">
+		SELECT 
+			a.msg_id,
+			a.push_id,
+			a.title,
+			a.msg_content,
+			a.create_time,
+			b.read_id is not null as read_flag,
+			b.read_id,
+			b.is_del,
+			b.user_id
+		FROM
+		 pua_sys_msg a
+		LEFT JOIN
+			(SELECT read_id,msg_id,is_del,user_id from pua_sysmsg_read WHERE user_id=#{pm.user_id}) as  b
+		ON
+			a.msg_id=b.msg_id
+		WHERE
+			DATE_FORMAT(a.create_time,'%Y-%m-%d') &lt;= NOW()
+			and (a.push_id = '-1' or a.push_id=#{pm.user_id})
+		order by
+			read_flag asc,a.create_time desc
+
+	</select>
+	
+	<!-- 判断用户是否有新的系统消息，如果result 大于0 则有 -->
+	<select id="hasSysMsg" parameterType="pm" resultType="pm">
+		SELECT
+			COUNT(a.msg_id) as total,
+			b.count,
+			(COUNT(a.msg_id)-b.count) as result
+			FROM 
+			pua_sys_msg a,(SELECT count(read_id) as count from pua_sysmsg_read WHERE user_id=#{user_id}) as b
+		WHERE
+			DATE_FORMAT(a.create_time,'%Y-%m-%d') &lt;= NOW()
+
+	</select>
+	
+	<select id="repeatReadSystem" parameterType="pm" resultType="pm">
+		select read_id,msg_id,user_id from pua_sysmsg_read where msg_id=#{msg_id} and user_id=#{user_id}
+	</select>
+	
+	<update id="delSysMsgRead" parameterType="pm" >
+		update pua_sysmsg_read set is_del =1 where read_id=#{read_id} and user_id=#{user_id}
+	</update>
+
+
+	<!-- 保存投稿-->
+	<insert id="saveContribut" parameterType="pm">
+		insert into pua_contribute(
+			user_id,
+			content,
+			type,
+			create_time
+		) values(
+			#{user_id},
+			#{content},
+			#{type},
+			#{create_time}
+		)
+	</insert>
+	
+</mapper>

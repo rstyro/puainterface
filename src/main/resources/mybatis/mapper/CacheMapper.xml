@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="top.lrshuai.pua.dao.CacheDao" >
+
+	<select id="getUserList" parameterType="pm" resultType="pm">
+		SELECT
+			a.user_id,
+			a.nick_name
+		from 
+			pua_users a
+	</select>
+	
+	
+	<select id="getAbout" parameterType="pm" resultType="pm">
+		SELECT 
+			id,
+			type,
+			text
+		from 
+			pua_about
+		WHERE
+			type=#{type}
+		ORDER BY id asc
+	</select>
+	
+</mapper>

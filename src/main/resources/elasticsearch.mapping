@@ -1,0 +1,36 @@
+{
+    "setting":{
+        "number_of_shards":5,
+        "number_of_replicas":1
+    },
+    "mappings":{
+        "speechcraft":{
+            "properties":{
+                "speechcraft_id":{
+                    "type":"text",
+                    "index":"not_analyzed"
+                },
+                "user_id":{
+                    "type":"text",
+                    "index":"not_analyzed"
+                },
+                "content":{
+                    "type":"text",
+					"analyzer":"ik_max_word",
+					"search_analyzer":"ik_smart"
+                },
+                "type":{
+                    "type":"text",
+                    "index":"not_analyzed"
+                },
+                "praise_num":{
+                    "type":"long"
+                },
+                "create_time":{
+                    "type":"date",
+                    "format":"yyyy-MM-dd HH:mm:ss || yyyy-MM-dd || epoch_millis"
+                }
+            }
+        }
+    }
+}

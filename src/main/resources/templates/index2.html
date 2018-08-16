@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>PUA 养成</title>
+<link th:href="@{/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+<style>
+	hr{
+		margin-top: 10px;
+		margin-bottom: 10px;
+	}
+	.search{
+		margin: 20px 0px 10px;
+	}
+	.pua-title{
+		margin-bottom: 20px;
+		height: 45px;
+		z-index: 1000;
+		margin-left: 1px;
+		margin-right: 1px;
+		background-color: rgba(0,0,0,0.1);
+	}
+	.pua-title a{
+		text-decoration: none;
+		text-align: center;
+		font-size: 15px;
+		display: inline-block;
+		width: 100%;
+		font-weight: bold;
+		color: #222;
+		width: 100%;
+		height: 100%;
+		line-height: 40px;
+	}
+	.pua-title a.ative{
+		color: #2946D1;
+	}
+	.pua-box{
+		padding: 0px -15px;
+		clear: both;
+	}
+	.pua-box p{
+		margin: 0px;
+	}
+</style>
+</head>
+<body>
+<div class="container">
+	<div class="search">
+	    <form id="seachForm" class="bs-example bs-example-form" role="form" action="/" th:action="@{/robot/brain/1}">
+	        <div class="input-group input-group-lg">
+	            <input type="text" th:value="${kw}" value="ss" name="kw" class="form-control" placeholder="听说没有搜不到的东西">
+	            <span id="submit" class="input-group-addon">搜索 <i class="fa fa-search"></i></span>
+	        </div>
+	    </form>
+	</div>
+<hr>
+<div class="row pua-title">
+	<div class="col-md-2 col-sm-2 col-xs-2"><a th:href="@{/pua/all}" target="mainFrame" class="ative">全部</a></div>
+	<div class="col-md-2 col-sm-2 col-xs-2"><a th:href="@{/pua/coldRead}" target="mainFrame">冷读</a></div>
+	<div class="col-md-2 col-sm-2 col-xs-2"><a th:href="@{/pua/accost}" target="mainFrame">搭讪</a></div>
+	<div class="col-md-2 col-sm-2 col-xs-2"><a th:href="@{/pua/talk}" target="mainFrame">对话</a></div>
+	<div class="col-md-2 col-sm-2 col-xs-2"><a th:href="@{/pua/kino}" target="mainFrame">进挪</a></div>
+	<div class="col-md-2 col-sm-2 col-xs-2"><a th:href="@{/pua/material}" target="mainFrame">材料</a></div>
+</div>
+<iframe name="mainFrame" id="mainBodyFrame" src="/pua/all"
+	frameborder="0" scrolling="no" width="100%" style="min-height: 700px;" onload="setIframeHeight(this)"></iframe>
+
+	
+</div>
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
+<script>
+//iframe 自适应
+function setIframeHeight(iframe) {
+	if (iframe) {
+		var iframeWin = iframe.contentWindow
+				|| iframe.contentDocument.parentWindow;
+		if (iframeWin.document.body) {
+			iframe.height = iframeWin.document.documentElement.scrollHeight
+					|| iframeWin.document.body.scrollHeight;
+		}
+	}
+};
+
+window.onload = function() {
+	setIframeHeight(document.getElementById('mainBodyFrame'));
+};
+</script>
+
+<script>
+var titleWidth = $(".pua-title").width();
+var offset = $(".pua-title").offset()
+$(function(){
+	$(".pua-title").css({"width":titleWidth});
+	$(window).scroll(function(){
+		var titleTop = offset.top;
+		var toph = $(document).scrollTop();
+		var realHeigth = titleTop-toph;
+		if(realHeigth <= 0){
+			$(".pua-title").css({"position":"fixed","top":0});
+		}else{
+			$(".pua-title").css({"position":"relative","top":0});
+		}
+		
+	});
+})
+</script>
+</body>
+</html>
